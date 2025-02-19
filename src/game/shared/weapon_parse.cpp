@@ -449,16 +449,36 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 	// Now read the weapon sounds
 	memset( aShootSounds, 0, sizeof( aShootSounds ) );
 	KeyValues *pSoundData = pKeyValuesData->FindKey( "SoundData" );
-	if ( pSoundData )
+	if (pSoundData)
 	{
-		for ( int i = EMPTY; i < NUM_SHOOT_SOUND_TYPES; i++ )
+		for (int i = EMPTY; i < NUM_SHOOT_SOUND_TYPES; i++)
 		{
-			const char *soundname = pSoundData->GetString( pWeaponSoundCategories[i] );
-			if ( soundname && soundname[0] )
+			const char *soundname = pSoundData->GetString(pWeaponSoundCategories[i]);
+			if (soundname && soundname[0])
 			{
-				Q_strncpy( aShootSounds[i], soundname, MAX_WEAPON_STRING );
+				Q_strncpy(aShootSounds[i], soundname, MAX_WEAPON_STRING);
 			}
 		}
+	}
+	KeyValues *pSights = pKeyValuesData->FindKey("IronSight");
+	if (pSights)
+	{
+		vecIronsightPosOffset.x = pSights->GetFloat("forward", 0.0f);
+		vecIronsightPosOffset.y = pSights->GetFloat("right", 0.0f);
+		vecIronsightPosOffset.z = pSights->GetFloat("up", 0.0f);
+
+		angIronsightAngOffset[PITCH] = pSights->GetFloat("pitch", 0.0f);
+		angIronsightAngOffset[YAW] = pSights->GetFloat("yaw", 0.0f);
+		angIronsightAngOffset[ROLL] = pSights->GetFloat("roll", 0.0f);
+
+		flIronsightFOVOffset = pSights->GetFloat("fov", 0.0f);
+	}
+	else
+	{
+		//note: you can set a bool here if you'd like to disable ironsights for weapons with no IronSight-key
+		vecIronsightPosOffset = vec3_origin;
+		angIronsightAngOffset.Init();
+		flIronsightFOVOffset = 0.0f;
 	}
 }
 
